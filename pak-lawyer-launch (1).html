@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pak Lawyer's AI-Notebook — your AI junior counsel</title>
+<meta name="description" content="Not case management. Your courtroom intelligence. Capture the case, read the FIR, score your case's health, plan the next hearing — and judge the judge. Built for Pakistan's advocates.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,500;1,700&family=Marcellus&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#06140E; --panel:#0B2318; --panel-2:#0F2E22;
+  --bone:#ECE5D1; --bone-soft:#AEBAAC; --bone-faint:#7C8A7E;
+  --brass:#C9A227; --brass-bright:#E8C766; --gold:#F4D58D;
+  --seal:#B23A2B; --date:#D99A4A;
+  --line:rgba(201,162,39,.20); --line-soft:rgba(236,229,209,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--ink);color:var(--bone);font-family:'Inter',system-ui,sans-serif;
+  line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+  background-image:
+    radial-gradient(900px 520px at 82% -8%,rgba(201,162,39,.10),transparent 60%),
+    radial-gradient(820px 600px at -8% 12%,rgba(14,46,34,.7),transparent 60%),
+    radial-gradient(700px 500px at 50% 120%,rgba(178,58,43,.07),transparent 55%);
+}
+::selection{background:var(--brass);color:var(--ink)}
+a{color:inherit;text-decoration:none}
+em{font-style:italic}
+
+/* ---- shared structure ---- */
+.section{padding:clamp(72px,11vw,140px) 22px;position:relative}
+.wrap{max-width:1080px;margin:0 auto}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--brass);display:inline-flex;align-items:center;gap:9px}
+.eyebrow::before{content:"";width:26px;height:1px;background:var(--brass);opacity:.7}
+.display{font-family:'Playfair Display',serif;font-weight:900;line-height:1.04;letter-spacing:-.01em;color:var(--bone)}
+
+/* ---- hero ---- */
+.hero{min-height:100svh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:84px 22px 64px;position:relative}
+.tab{
+  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--brass-bright);border:1px solid var(--line);border-radius:3px;padding:7px 15px;margin-bottom:clamp(34px,7vw,64px);
+  background:linear-gradient(180deg,rgba(201,162,39,.08),transparent);position:relative
+}
+.tab::after{content:"";position:absolute;left:50%;bottom:-22px;width:1px;height:16px;background:var(--line);transform:translateX(-50%)}
+.hero-stack{display:grid;width:100%;max-width:760px}
+.hero-stack>*{grid-area:1/1}
+
+.intel{font-family:'JetBrains Mono',monospace;font-size:clamp(12.5px,2.6vw,15px);line-height:2.05;text-align:left;align-self:center;transition:opacity .8s ease,filter .8s ease}
+.intel.done{opacity:.18;filter:blur(2px)}
+.il{opacity:0;transform:translateY(10px);transition:opacity .6s ease,transform .6s ease;color:var(--bone)}
+.il.on{opacity:1;transform:none}
+.il.dim{color:var(--bone-faint)}
+.il .q{color:var(--brass-bright)}
+.il.seal-line{color:var(--seal);font-weight:700;margin-top:10px;letter-spacing:.04em}
+
+.unveil{opacity:0;transform:translateY(16px);transition:opacity .9s ease,transform .9s ease;align-self:center}
+.unveil.on{opacity:1;transform:none}
+.up-eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--seal);margin-bottom:18px}
+.up-head{font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(38px,8.4vw,76px);line-height:1.02;letter-spacing:-.02em;color:var(--bone)}
+.up-head em{color:var(--brass-bright);font-weight:700}
+.lockup{display:inline-flex;align-items:center;gap:14px;margin:30px 0 14px;padding:11px 20px 11px 14px;border:1px solid var(--line);border-radius:60px;background:linear-gradient(120deg,rgba(11,35,24,.9),rgba(15,46,34,.6))}
+.lockup .seal{width:42px;height:42px;flex:none}
+.lockup .bn{display:flex;flex-direction:column;text-align:left;line-height:1.15}
+.lockup .brandname{font-family:'Marcellus',serif;font-size:18px;color:var(--gold);letter-spacing:.2px}
+.lockup .brandsub{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--bone-faint);margin-top:2px}
+.up-copy{max-width:560px;margin:8px auto 30px;color:var(--bone-soft);font-size:clamp(14.5px,2.5vw,16.5px)}
+.up-copy b{color:var(--bone);font-weight:600}
+.cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+
+/* ---- buttons ---- */
+.btn-primary{
+  font-family:'Inter',sans-serif;font-weight:700;font-size:15px;color:var(--ink);
+  background:linear-gradient(180deg,var(--brass-bright),var(--brass));border:1px solid var(--gold);
+  padding:14px 26px;border-radius:7px;letter-spacing:.01em;
+  box-shadow:0 10px 28px rgba(201,162,39,.28),inset 0 1px 0 rgba(255,255,255,.4);
+  transition:transform .18s ease,box-shadow .18s ease;display:inline-block
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 38px rgba(201,162,39,.4),inset 0 1px 0 rgba(255,255,255,.5)}
+.btn-ghost{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.05em;color:var(--bone-soft);padding:14px 18px;border:1px solid var(--line);border-radius:7px;transition:color .2s,border-color .2s}
+.btn-ghost:hover{color:var(--gold);border-color:var(--brass)}
+
+/* ---- the turn ---- */
+.turn{text-align:center}
+.turn h2{font-size:clamp(30px,6vw,58px);margin:20px auto 18px;max-width:14ch}
+.turn h2 .x{color:var(--bone-faint);position:relative;white-space:nowrap}
+.turn h2 .x::after{content:"";position:absolute;left:-2%;right:-2%;top:54%;height:3px;background:var(--seal);transform:rotate(-2deg)}
+.turn p{max-width:600px;margin:0 auto;color:var(--bone-soft);font-size:clamp(15px,2.5vw,17px)}
+
+/* ---- files (the dossier) ---- */
+.files-head{text-align:center;margin-bottom:clamp(40px,7vw,70px)}
+.files-head h2{font-size:clamp(28px,5.4vw,50px);margin-top:16px}
+.files{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px}
+.file{
+  position:relative;border:1px solid var(--line);border-radius:12px;padding:30px 24px 26px;
+  background:linear-gradient(165deg,var(--panel) 0%,rgba(6,20,14,.7) 100%);
+  opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease,border-color .3s ease,box-shadow .3s ease;
+}
+.file.inview{opacity:1;transform:none}
+.file:hover{border-color:rgba(201,162,39,.5);box-shadow:0 18px 50px rgba(0,0,0,.45)}
+.file .ftab{
+  position:absolute;top:-1px;left:24px;transform:translateY(-50%);
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink);background:linear-gradient(180deg,var(--brass-bright),var(--brass));
+  padding:4px 11px;border-radius:4px;font-weight:700;box-shadow:0 3px 8px rgba(0,0,0,.3)
+}
+.file .fq{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--seal);letter-spacing:.04em;margin-bottom:9px}
+.file h3{font-family:'Playfair Display',serif;font-weight:700;font-size:23px;line-height:1.15;color:var(--gold);margin-bottom:11px}
+.file p{color:var(--bone-soft);font-size:14.5px;line-height:1.62}
+.file p b{color:var(--bone);font-weight:600}
+
+/* ---- bands ---- */
+.band{border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);background:linear-gradient(180deg,rgba(11,35,24,.5),transparent)}
+.band-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:center}
+.band h2{font-size:clamp(26px,4.6vw,42px);margin-bottom:16px}
+.band p{color:var(--bone-soft);font-size:clamp(14.5px,2.4vw,16px)}
+.trust-list{list-style:none;display:flex;flex-direction:column;gap:14px}
+.trust-list li{display:flex;gap:13px;align-items:flex-start;font-size:14.5px;color:var(--bone)}
+.trust-list .tk{font-family:'JetBrains Mono',monospace;color:var(--brass-bright);font-size:13px;flex:none;margin-top:1px}
+
+/* ---- local pride ---- */
+.local{text-align:center;position:relative;overflow:hidden}
+.palm-wrap{font-size:clamp(40px,9vw,72px);line-height:1;filter:drop-shadow(0 6px 10px rgba(0,0,0,.5));position:relative;display:inline-block;margin-bottom:8px}
+.local h2{font-size:clamp(26px,5vw,44px);margin:14px auto;max-width:18ch}
+.local h2 em{color:var(--date)}
+.local p{max-width:560px;margin:0 auto;color:var(--bone-soft);font-size:15px}
+.drop{position:absolute;top:62%;width:6px;height:9px;border-radius:50% 50% 55% 55%;background:radial-gradient(circle at 35% 30%,var(--date),#5a2e0c);opacity:0;animation:dateFall 2.6s ease-in infinite}
+.drop:nth-child(1){left:42%;animation-delay:0s}
+.drop:nth-child(2){left:55%;animation-delay:.7s}
+.drop:nth-child(3){left:48%;animation-delay:1.4s}
+.drop:nth-child(4){left:60%;animation-delay:2s}
+@keyframes dateFall{0%{opacity:0;transform:translateY(-4px) scale(.6)}15%{opacity:1}100%{opacity:0;transform:translateY(46px) scale(1)}}
+
+/* ---- final cta ---- */
+.final{text-align:center}
+.final h2{font-size:clamp(32px,7vw,66px);margin:18px auto 14px;max-width:15ch;line-height:1.05}
+.final h2 em{color:var(--brass-bright)}
+.final .sub{color:var(--bone-soft);margin-bottom:34px;font-size:clamp(14.5px,2.4vw,16.5px)}
+.final .made{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--bone-faint);margin-top:34px}
+.final .made b{color:var(--gold);font-weight:400}
+
+/* ---- footer ---- */
+footer{padding:30px 22px;text-align:center;border-top:1px solid var(--line-soft);color:var(--bone-faint);font-size:12.5px}
+
+/* ---- sticky mini-cta ---- */
+.dock{position:fixed;right:16px;bottom:16px;z-index:50;opacity:0;transform:translateY(14px);transition:opacity .4s,transform .4s;pointer-events:none}
+.dock.show{opacity:1;transform:none;pointer-events:auto}
+.dock a{font-family:'Inter',sans-serif;font-weight:700;font-size:13.5px;color:var(--ink);background:linear-gradient(180deg,var(--brass-bright),var(--brass));padding:11px 18px;border-radius:50px;box-shadow:0 10px 26px rgba(0,0,0,.4);border:1px solid var(--gold);display:inline-block}
+
+@media(max-width:760px){
+  .band-grid{grid-template-columns:1fr;gap:26px}
+  .tab::after{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .drop{animation:none;display:none}
+  *{transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="tab">Confidential // Advocate's File</div>
+  <div class="hero-stack">
+    <div class="intel" id="intel">
+      <p class="il">TOMORROW — 09:00 — SESSIONS COURT.</p>
+      <p class="il">PRESIDING: Hon'ble Judge ___________.</p>
+      <p class="il dim">his temperament? <span class="q">his leanings?</span> ……… unknown.</p>
+      <p class="il">THE ACCUSED — prior record? ……… <span class="q">unknown.</span></p>
+      <p class="il">THE FIR, u/s 302 — does the charge even hold? ……… <span class="q">unknown.</span></p>
+      <p class="il dim">your notes: three diaries · two phones · one memory.</p>
+      <p class="il">OPPOSING COUNSEL: already prepared.</p>
+      <p class="il seal-line">— so you walk in blind.</p>
+    </div>
+    <div class="unveil" id="unveil">
+      <p class="up-eyebrow">Not anymore.</p>
+      <h1 class="up-head">Know everything.<br><em>Before you enter.</em></h1>
+      <div class="lockup">
+        <svg class="seal" viewBox="0 0 48 48" aria-hidden="true">
+          <circle cx="24" cy="24" r="22.5" fill="none" stroke="#C9A227" stroke-width="1.4"/>
+          <circle cx="24" cy="24" r="18.5" fill="none" stroke="#C9A227" stroke-opacity=".45" stroke-width=".8"/>
+          <g stroke="#F4D58D" stroke-width="1.9" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="24" y1="13" x2="24" y2="33"/>
+            <line x1="14.5" y1="17.5" x2="33.5" y2="17.5"/>
+            <line x1="14.5" y1="17.5" x2="11" y2="23.6"/><line x1="14.5" y1="17.5" x2="18" y2="23.6"/>
+            <path d="M11 23.6 a3.5 3.5 0 0 0 7 0"/>
+            <line x1="33.5" y1="17.5" x2="30" y2="23.6"/><line x1="33.5" y1="17.5" x2="37" y2="23.6"/>
+            <path d="M30 23.6 a3.5 3.5 0 0 0 7 0"/>
+            <line x1="18" y1="34.5" x2="30" y2="34.5"/>
+          </g>
+          <circle cx="24" cy="11.6" r="1.9" fill="#F4D58D"/>
+        </svg>
+        <span class="bn"><span class="brandname">Pak Lawyer's AI-Notebook</span><span class="brandsub">Your AI junior counsel</span></span>
+      </div>
+      <p class="up-copy">It captures the case, reads the FIR, scores your case's <b>health</b>, plans your next hearing — and yes, it <b>judges the judge</b>.</p>
+      <div class="cta-row">
+        <a class="btn-primary" data-app href="#">Open free for 30 days</a>
+        <a class="btn-ghost" href="#files">See what it does ↓</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THE TURN ============ -->
+<section class="section turn">
+  <div class="wrap">
+    <span class="eyebrow">The difference</span>
+    <h2 class="display">This is <span class="x">not case management</span>. It's your courtroom intelligence.</h2>
+    <p>A notebook only remembers. An advocate's assistant <b style="color:var(--bone)">thinks with you</b> — before the hearing, during the fight, and after the order. Every case, every judge, every opponent: read, assessed, and ready in your hand.</p>
+  </div>
+</section>
+
+<!-- ============ THE DOSSIER (FILES) ============ -->
+<section class="section" id="files">
+  <div class="wrap">
+    <div class="files-head">
+      <span class="eyebrow">Open the dossier</span>
+      <h2 class="display">Eight files. One advocate's edge.</h2>
+    </div>
+    <div class="files">
+
+      <article class="file reveal">
+        <span class="ftab">File 01 · Capture</span>
+        <div class="fq">"I don't have time to type all this."</div>
+        <h3>The file writes itself</h3>
+        <p>Speak it, paste it, or <b>photograph the FIR</b>. The AI reads the document and fills the case, the parties, the sections and the dates — in seconds. Even dump a whole pile of mixed notes and it sorts them into proper records.</p>
+      </article>
+
+      <article class="file reveal">
+        <span class="ftab">File 02 · The Bench</span>
+        <div class="fq">"Which judge am I before — and how does he think?"</div>
+        <h3>It judges the judge</h3>
+        <p>Build an intelligence file on every judge: temperament, leanings, reversal record, rapport — then one tap gives an <b>AI read on exactly how to argue before them</b>. A guide, not a gamble.</p>
+      </article>
+
+      <article class="file reveal">
+        <span class="ftab">File 03 · The Accused</span>
+        <div class="fq">"What's his history — and where's the case weak?"</div>
+        <h3>Every prior. Every pattern. Every gap.</h3>
+        <p>Profile the accused — criminal history, associates, footprint, photos — and let the AI flag the <b>bail risks, the weak points, and the evidence that's missing</b> before the other side finds it.</p>
+      </article>
+
+      <article class="file reveal">
+        <span class="ftab">File 04 · The Opposition</span>
+        <div class="fq">"What's their counsel going to pull?"</div>
+        <h3>Know their game first</h3>
+        <p>Size up opposing counsel: their style, their habits, the <b>weaknesses you can exploit</b>, and a clear plan to counter them. Walk in expecting their move.</p>
+      </article>
+
+      <article class="file reveal">
+        <span class="ftab">File 05 · Case Health</span>
+        <div class="fq">"Is my case actually strong?"</div>
+        <h3>A diagnosis for your case</h3>
+        <p>One tap gives your case a <b>strength score</b>, flags its weaknesses <b>with fixes</b>, matches the applicable law, and tells you which evidence you still need to win it.</p>
+      </article>
+
+      <article class="file reveal">
+        <span class="ftab">File 06 · The Next Move</span>
+        <div class="fq">"What do I actually do at the next date?"</div>
+        <h3>Walk in with a plan</h3>
+        <p>The AI lays out a concrete, <b>step-by-step plan for the next hearing</b> — what to file, what to argue, what to carry — so you prepare instead of improvise.</p>
+      </article>
+
+      <article class="file reveal">
+        <span class="ftab">File 07 · The FIR</span>
+        <div class="fq">"Does this charge even stand?"</div>
+        <h3>Read the FIR in seconds</h3>
+        <p>Paste an FIR and get <b>bail eligibility</b>, a charge-match table, and the holes in the prosecution's story — a full pre-hearing read before you draft a single word.</p>
+      </article>
+
+      <article class="file reveal">
+        <span class="ftab">File 08 · Clients &amp; Diary</span>
+        <div class="fq">"I can't lose another date."</div>
+        <h3>Nothing slips</h3>
+        <p>Every client, every hearing, every deadline — <b>tracked, searchable, and never missed</b>, with the whole case linked together so one tap shows you everything.</p>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ TRUST BAND ============ -->
+<section class="section band">
+  <div class="wrap band-grid">
+    <div>
+      <span class="eyebrow">Yours alone</span>
+      <h2 class="display">Your files stay your files.</h2>
+      <p>No firm needs to host your cases. Nothing is locked behind a login you'll lose. It runs on the phone or laptop you already carry — and it's free to try for a full month.</p>
+    </div>
+    <ul class="trust-list">
+      <li><span class="tk">[01]</span><span>Works <b style="color:var(--bone)">offline</b>, on any phone or laptop — no app store, no install.</span></li>
+      <li><span class="tk">[02]</span><span>Your data lives <b style="color:var(--bone)">on your device</b> and backs up to <b style="color:var(--bone)">your own Google Drive</b> — not our servers.</span></li>
+      <li><span class="tk">[03]</span><span>Restore on a new phone in one tap. Switch devices without losing a thing.</span></li>
+      <li><span class="tk">[04]</span><span><b style="color:var(--bone)">Free for your first 30 days.</b> Keep going for the price of a few cups of chai.</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ LOCAL PRIDE ============ -->
+<section class="section local">
+  <div class="wrap">
+    <div class="palm-wrap">🌴<span class="drop"></span><span class="drop"></span><span class="drop"></span><span class="drop"></span></div>
+    <span class="eyebrow" style="justify-content:center">From Makran, for Pakistan</span>
+    <h2 class="display">Built in <em>Turbat</em>. Made for every advocate of Pakistan.</h2>
+    <p>From the courts of Kech to every district bar in the country — an assistant that speaks your practice: FIRs, bail, roznamcha, sessions and high court. Rooted at home, useful everywhere.</p>
+  </div>
+</section>
+
+<!-- ============ FINAL CTA ============ -->
+<section class="section final">
+  <div class="wrap">
+    <span class="eyebrow" style="justify-content:center">The next date is coming</span>
+    <h2 class="display">Be the one who walks in <em>ready</em>.</h2>
+    <p class="sub">Open the notebook, add your first case, and let it brief you for the next hearing — free for 30 days.</p>
+    <a class="btn-primary" data-app href="#" style="font-size:16px;padding:16px 32px">Open the notebook</a>
+    <div class="made">TrendCatcher-Kech · Idea &amp; build by <b>Nazeer Baloch</b></div>
+  </div>
+</section>
+
+<footer>Pak Lawyer's AI-Notebook — your courtroom intelligence. Not legal advice; an assistant for advocates.</footer>
+
+<div class="dock" id="dock"><a data-app href="#">Open free →</a></div>
+
+<script>
+/* ====== set this to your deployed app link ====== */
+var APP_URL = "https://trendcatcher2.github.io/munshi/";
+document.querySelectorAll('[data-app]').forEach(function(a){ a.setAttribute('href', APP_URL); });
+
+var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var lines = Array.prototype.slice.call(document.querySelectorAll('.il'));
+var intel = document.getElementById('intel');
+var unveil = document.getElementById('unveil');
+
+if (reduce) {
+  lines.forEach(function(l){ l.classList.add('on'); });
+  intel.classList.add('done');
+  unveil.classList.add('on');
+} else {
+  var t = 480;
+  lines.forEach(function(l, i){
+    setTimeout(function(){ l.classList.add('on'); }, t);
+    t += (i < 2 ? 720 : 600);
+  });
+  setTimeout(function(){ intel.classList.add('done'); unveil.classList.add('on'); }, t + 760);
+}
+
+/* scroll reveals */
+if ('IntersectionObserver' in window) {
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting){ e.target.classList.add('inview'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.16, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+} else {
+  document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('inview'); });
+}
+
+/* sticky dock appears after hero */
+var dock = document.getElementById('dock');
+var hero = document.querySelector('.hero');
+if ('IntersectionObserver' in window) {
+  var io2 = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ dock.classList.toggle('show', !e.isIntersecting); });
+  }, { threshold: 0.05 });
+  io2.observe(hero);
+}
+</script>
+</body>
+</html>
